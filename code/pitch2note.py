@@ -1,4 +1,5 @@
 import numpy
+import math
 
 # factorizes `n`
 def prime_factors(n):
@@ -82,6 +83,7 @@ def change_freq_by_cents(freq, cents):
 
 # 1/4 comma meantone
 # takes tuning_standard to be the frequency for A4
+# TODO: make this take a generic base note...
 def temperament_quarter_comma_meantone(tuning_standard):
     limit = 7
     projection = numpy.array([
@@ -132,4 +134,34 @@ def temperament_12edo(tuning_standard):
 
     return octaves
 
+# calculate the difference between two frequencies in cents
+def get_cents_between(a, b):
+    cents = 1200 * math.log2(b / a)
+    return cents
+    # return abs(cents)
 
+# takes a frequency and an array of notes (pairs of note name and freq)
+# returns (note name, note freq, delta)
+def freq2note(freq, notes):
+    nearest_note = notes[0][0]
+    nearest_freq = notes[0][1]
+
+    for (note, note_freq) in notes:
+        nearest_freq_delta = abs(get_cents_between(freq, nearest_freq))
+        note_freq_delta = abs(get_cents_between(freq, note_freq))
+        if note_freq_delta < nearest_freq_delta:
+            nearest_note = note
+            nearest_freq = note_freq
+
+    nearest_delta = abs(get_cents_between(freq, nearest_freq))
+
+    return (nearest_note, nearest_freq, nearest_delta)
+
+# notes_qcm = temperament_quarter_comma_meantone(440)
+notes_12edo = temperament_12edo(440)
+
+# testing
+# print(get_cents_between(523, 440))
+# for n in notes_12edo:
+#     print(n)
+# print(freq2note(312.28, notes_12edo))
