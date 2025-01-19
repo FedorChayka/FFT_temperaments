@@ -42,7 +42,7 @@ def run_fourier(data, sample_rate, smoothing=True, freq_cutoff=False, frq_low=0,
         return freq, abs_fourier
     
 
-def find_top_peaks(data, sample_rate, peak_num, peak_dist): # peak dist in Hz
+def find_top_peaks(data, sample_rate, freq, peak_num, peak_dist): # data: fourier-transformed; peak_dist in Hz
     # find peaks:
     peaks,_ = scipy.signal.find_peaks(data, distance=round(peak_dist/(sample_rate / len(data))))
     # compute peak prominences:
@@ -51,7 +51,7 @@ def find_top_peaks(data, sample_rate, peak_num, peak_dist): # peak dist in Hz
     sorted_peaks,_ = zip(*sorted(zip(peaks, peaks_prom), key=operator.itemgetter(1), reverse=True))
     top_peaks = sorted_peaks[1:peak_num] # *indices* of top peaks
 
-    top_peaks_freq = [round(i*(sample_rate / len(data)), 2) for i in top_peaks]
+    top_peaks_freq = [round(freq[i], 2) for i in top_peaks]
 
     return top_peaks, top_peaks_freq
 
@@ -61,7 +61,7 @@ data, sample_rate = load_file("../../FFT_data/test_music/397_meantone.wav", )
 freq, fourier = run_fourier(data, sample_rate, smoothing=False, freq_cutoff=True, frq_low=40, frq_high=4000)
 _, smooth_fourier = run_fourier(data, sample_rate, smoothing=True, freq_cutoff=True, frq_low=40, frq_high=4000)
 
-peaks, peaks_freq = find_top_peaks(smooth_fourier, sample_rate, peak_num=50, peak_dist=10)
+peaks, peaks_freq = find_top_peaks(smooth_fourier, sample_rate, freq, peak_num=50, peak_dist=10)
 np.savetxt('top_peaks.csv', (peaks, peaks_freq), delimiter=',',fmt='%.2f')
 
 import matplotlib.pyplot as plt
