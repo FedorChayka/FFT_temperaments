@@ -70,4 +70,21 @@ plt.plot(freq, fourier)
 plt.plot(freq, smooth_fourier)
 for xc in [freq[i] for i in peaks]:
     plt.axvline(x=xc, color='red')
-plt.show()
+
+from pitch2note import temperament_12edo, freq2note
+
+notes = temperament_12edo(440)
+peak_notes = [freq2note(freq[i], notes) for i in peaks]
+
+print("===== peaks and notes =====")
+for i in peaks:
+    note = freq2note(freq[i], notes)
+    print(f"peak at {round(freq[i], 2)}hz, note = {note[0]} ({round(note[1], 2)}hz), delta of {round(note[2], 2)} cents")
+
+deltas = np.array([note[2] for note in peak_notes])
+delta_mean = np.mean(deltas)
+delta_l2_norm = np.linalg.norm(deltas)
+
+print()
+print(f"mean of deltas = {round(delta_mean, 2)}")
+print(f"L2 norm of deltas = {round(delta_l2_norm, 2)}")
