@@ -104,12 +104,32 @@ def temperament_quarter_comma_meantone(tuning_standard):
         map_octave(7, a4 * 2 * 2 * 2, projection, tuning_map, limit)
     ], [])
 
-    # temp
-    for n in octaves:
-        print(n)
+    return octaves
+
+def map_octave_12edo(octave, a_freq):
+    note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
+    notes = []
+    for (i, (name, interval)) in enumerate(zip(note_names, OCTAVE_INTERVALS)):
+        note_octave = octave if i < 3 else octave + 1
+        interval_cents = i * 100
+        notes.append((name + str(note_octave), change_freq_by_cents(a_freq, interval_cents)))
+
+    return notes
+
+def temperament_12edo(tuning_standard):
+    a4 = tuning_standard
+    octaves = sum([
+        map_octave_12edo(0, a4 * 0.5 * 0.5 * 0.5 * 0.5),
+        map_octave_12edo(1, a4 * 0.5 * 0.5 * 0.5),
+        map_octave_12edo(2, a4 * 0.5 * 0.5),
+        map_octave_12edo(3, a4 * 0.5),
+        map_octave_12edo(4, a4),
+        map_octave_12edo(5, a4 * 2),
+        map_octave_12edo(6, a4 * 2 * 2),
+        map_octave_12edo(7, a4 * 2 * 2 * 2)
+    ], [])
 
     return octaves
 
-def temperament_12edo():
-    # TODO
-    pass
+
