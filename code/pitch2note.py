@@ -63,10 +63,10 @@ OCTAVE_INTERVALS = [
     [15, 8],  # major seventh
     # [2, 1],   # octave
 ]
-# return an octave of notes starting from A_{octave}
+# in 1/4 comma meantone, return an octave of notes starting from A_{octave}
 #   using the given frequency for A, projection, tuning map, and prime limit
 # ie if octave=2, returns A2, B2, C3, D3, ...
-def map_octave(octave, a_freq, projection, tuning_map, limit):
+def map_octave_quarter_comma_meantone(octave, a_freq, projection, tuning_map, limit):
     note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
     notes = []
@@ -81,7 +81,8 @@ def map_octave(octave, a_freq, projection, tuning_map, limit):
 def change_freq_by_cents(freq, cents):
     return freq * (2**(cents/1200))
 
-# 1/4 comma meantone
+# generate list of notes for 1/4 comma meantone
+# each note is a tuple of (note name, note frequency)
 # takes tuning_standard to be the frequency for A4
 # TODO: make this take a generic base note...
 def temperament_quarter_comma_meantone(tuning_standard):
@@ -96,18 +97,21 @@ def temperament_quarter_comma_meantone(tuning_standard):
     
     a4 = tuning_standard
     octaves = sum([
-        map_octave(0, a4 * 0.5 * 0.5 * 0.5 * 0.5, projection, tuning_map, limit),
-        map_octave(1, a4 * 0.5 * 0.5 * 0.5, projection, tuning_map, limit),
-        map_octave(2, a4 * 0.5 * 0.5, projection, tuning_map, limit),
-        map_octave(3, a4 * 0.5, projection, tuning_map, limit),
-        map_octave(4, a4, projection, tuning_map, limit),
-        map_octave(5, a4 * 2, projection, tuning_map, limit),
-        map_octave(6, a4 * 2 * 2, projection, tuning_map, limit),
-        map_octave(7, a4 * 2 * 2 * 2, projection, tuning_map, limit)
+        map_octave_quarter_comma_meantone(0, a4 * 0.5 * 0.5 * 0.5 * 0.5, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(1, a4 * 0.5 * 0.5 * 0.5, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(2, a4 * 0.5 * 0.5, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(3, a4 * 0.5, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(4, a4, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(5, a4 * 2, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(6, a4 * 2 * 2, projection, tuning_map, limit),
+        map_octave_quarter_comma_meantone(7, a4 * 2 * 2 * 2, projection, tuning_map, limit)
     ], [])
 
     return octaves
 
+# in 12edo, return an octave of notes starting from A_{octave}
+#   using the given frequency for A
+# ie if octave=2, returns A2, B2, C3, D3, ...
 def map_octave_12edo(octave, a_freq):
     note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
@@ -119,6 +123,9 @@ def map_octave_12edo(octave, a_freq):
 
     return notes
 
+# generate list of notes for 12edo
+# each note is a tuple of (note name, note frequency)
+# takes tuning_standard to be the frequency for A4
 def temperament_12edo(tuning_standard):
     a4 = tuning_standard
     octaves = sum([
@@ -157,10 +164,9 @@ def freq2note(freq, notes):
 
     return (nearest_note, nearest_freq, nearest_delta)
 
-# notes_qcm = temperament_quarter_comma_meantone(440)
-notes_12edo = temperament_12edo(440)
-
 # testing
+# notes_qcm = temperament_quarter_comma_meantone(440)
+# notes_12edo = temperament_12edo(440)
 # print(get_cents_between(523, 440))
 # for n in notes_12edo:
 #     print(n)
